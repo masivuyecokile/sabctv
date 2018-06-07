@@ -1,17 +1,18 @@
 <?php
-$wdsl    = "https://secure4.tvlic.co.za/AccountEnquiryService_Test_1.0/AccountEnquiryService.svc?wsdl";
+require "conn.php";
+$wdsl = "https://secure4.tvlic.co.za/AccountEnquiryService_Test_1.0/AccountEnquiryService.svc?wsdl";
 $opts = array(
     'http' => array(
-            'user_agent' => 'PHPSoapClient'
-        )
+        'user_agent' => 'PHPSoapClient'
+    )
 );
 
 $context = stream_context_create($opts);
 
 $soapClientOptions = array(
-        'stream_context' => $context,
-        'cache_wsdl' => WSDL_CACHE_NONE
-    );
+    'stream_context' => $context,
+    'cache_wsdl' => WSDL_CACHE_NONE
+);
 //Generate GUID
 function getGUID()
 {
@@ -51,7 +52,29 @@ switch ($licencetype) {
             );
             // request parameters passed in the body not the header
             $account   = $client->GetAccount($arrParams);
-            echo json_encode($account);
+            $json      = json_encode($account);
+            echo $json; //send back to the browser
+            $results = json_decode($json);
+            
+            $message  = $results->GetAccountResult->Header->Status->Message;
+            $acc      = $results->GetAccountResult->Account->AccountNumber;
+            $balance  = $results->GetAccountResult->Account->Balance;
+            $initials = $results->GetAccountResult->Account->Initial;
+            $lastname = $results->GetAccountResult->Account->LastName;
+            $suburb   = $results->GetAccountResult->Account->PhysicalAddress->Suburb;
+            
+            $params = array(
+                "Domestic",
+                $acc,
+                $message,
+                $balance,
+                $initials,
+                $lastname,
+                $suburb,
+                $holder_id
+            );
+            $sql    = "INSERT INTO wp_tvlicence_entries (type,accountnumber,message,balance,initials,lastname,suburb,idnum) VALUES(?,?,?,?,?,?,?,?)";
+            $stmt   = conn::run($sql, $params);
         }
         catch (\Exception $e) {
             echo "Error!";
@@ -62,6 +85,7 @@ switch ($licencetype) {
     
     case 'business':
         $tvlicencenumber = isset($_POST['tvlicence']) ? $_POST['tvlicence'] : NULL;
+        $registration = isset($_POST['reg_num']) ? $_POST['reg_num'] : null;
         try {
             $client = new SoapClient($wdsl, $soapClientOptions);
             $client->__setLocation('https://secure4.tvlic.co.za/AccountEnquiryService_1.0/AccountEnquiryService.svc');
@@ -70,7 +94,7 @@ switch ($licencetype) {
                 'request' => array(
                     'Header' => array(
                         'Rquid' => $quid,
-                        'ApiKey' => '2c261e98-90ca-4f7d-90a0-1f5e91ebf416 '
+                        'ApiKey' => '2c261e98-90ca-4f7d-90a0-1f5e91ebf416'
                     ),
                     'AccountIdentifier' => $tvlicencenumber,
                     'AccountIdentifierType' => 'AccountNumber'
@@ -78,7 +102,29 @@ switch ($licencetype) {
             );
             // request parameters passed in the body not the header
             $account   = $client->GetAccount($arrParams);
-            echo json_encode($account);
+            $json      = json_encode($account);
+            echo $json; //send back to the browser
+            $results = json_decode($json);
+            
+            $message  = $results->GetAccountResult->Header->Status->Message;
+            $acc      = $results->GetAccountResult->Account->AccountNumber;
+            $balance  = $results->GetAccountResult->Account->Balance;
+            $initials = $results->GetAccountResult->Account->Initial;
+            $lastname = $results->GetAccountResult->Account->LastName;
+            $suburb   = $results->GetAccountResult->Account->PhysicalAddress->Suburb;
+            
+            $params = array(
+                "Business",
+                $acc,
+                $message,
+                $balance,
+                $initials,
+                $lastname,
+                $suburb,
+                $registration
+            );
+            $sql    = "INSERT INTO wp_tvlicence_entries (type,accountnumber,message,balance,initials,lastname,suburb,idnum) VALUES(?,?,?,?,?,?,?,?)";
+            $stmt   = conn::run($sql, $params);
         }
         catch (\Exception $e) {
             echo "Error!";
@@ -89,6 +135,7 @@ switch ($licencetype) {
     
     case 'dealer':
         $tvlicencenumber = isset($_POST['tvlicence']) ? $_POST['tvlicence'] : NULL;
+        $registration = isset($_POST['reg_num']) ? $_POST['reg_num'] : null;
         try {
             $client = new SoapClient($wdsl, $soapClientOptions);
             $client->__setLocation('https://secure4.tvlic.co.za/AccountEnquiryService_1.0/AccountEnquiryService.svc');
@@ -97,7 +144,7 @@ switch ($licencetype) {
                 'request' => array(
                     'Header' => array(
                         'Rquid' => $quid,
-                        'ApiKey' => '2c261e98-90ca-4f7d-90a0-1f5e91ebf416 '
+                        'ApiKey' => '2c261e98-90ca-4f7d-90a0-1f5e91ebf416'
                     ),
                     'AccountIdentifier' => $tvlicencenumber,
                     'AccountIdentifierType' => 'AccountNumber'
@@ -105,7 +152,29 @@ switch ($licencetype) {
             );
             // request parameters passed in the body not the header
             $account   = $client->GetAccount($arrParams);
-            echo json_encode($account);
+            $json      = json_encode($account);
+            echo $json; //send back to the browser
+            $results = json_decode($json);
+            
+            $message  = $results->GetAccountResult->Header->Status->Message;
+            $acc      = $results->GetAccountResult->Account->AccountNumber;
+            $balance  = $results->GetAccountResult->Account->Balance;
+            $initials = $results->GetAccountResult->Account->Initial;
+            $lastname = $results->GetAccountResult->Account->LastName;
+            $suburb   = $results->GetAccountResult->Account->PhysicalAddress->Suburb;
+            
+            $params = array(
+                "Dealer",
+                $acc,
+                $message,
+                $balance,
+                $initials,
+                $lastname,
+                $suburb,
+                $registration
+            );
+            $sql    = "INSERT INTO wp_tvlicence_entries (type,accountnumber,message,balance,initials,lastname,suburb,idnum) VALUES(?,?,?,?,?,?,?,?)";
+            $stmt   = conn::run($sql, $params);
         }
         catch (\Exception $e) {
             echo "Error!";
@@ -118,4 +187,3 @@ switch ($licencetype) {
         
         echo json_encode('Please select licence type');
 }
-?>
