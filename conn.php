@@ -3,16 +3,16 @@
 
     // require_once(ABSPATH . 'wp-config.php');
 
-define('DB_NAME', 'testpqkbye_db1');
+define('DB_NAME', '');
 
 /** MySQL database username */
-define('DB_USER', 'testpqkbye_1');
+define('DB_USER', '');
 
 /** MySQL database password */
-define('DB_PASSWORD', 'P3HhmMRr1A8');
+define('DB_PASSWORD', '');
 
 /** MySQL hostname */
-define('DB_HOST', 'dedi835.jnb1.host-h.net');
+define('DB_HOST', '');
 
 	class conn
 {
